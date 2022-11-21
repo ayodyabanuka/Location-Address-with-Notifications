@@ -215,6 +215,7 @@ class _HomeState extends State<Home> {
     scheduledTask = cron.schedule(Schedule.parse("*/1 * * * *"), () async {
       NotificationService().showNotification(
           1, "Location", "Now your location $_currentAddress}", 1);
+      _getCurrentPosition();
     });
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
