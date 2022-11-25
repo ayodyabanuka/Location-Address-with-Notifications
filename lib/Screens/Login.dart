@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:locationtracker/Screens/Home.dart';
+
+import '../Providers/LoginProvider.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -9,9 +14,18 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-TextEditingController email, password = TextEditingController();
+TextEditingController email = TextEditingController();
+TextEditingController password = TextEditingController();
+ScheduledTask scheduledTask;
 
 class _LoginState extends State<Login> {
+  @override
+  void initState() {
+    cancelSheduleTask();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,8 +102,22 @@ class _LoginState extends State<Login> {
             ),
             InkWell(
               onTap: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Home()));
+                String emailString = email.text.toString();
+                String passwordString = password.text.toString();
+
+                if (emailString != "" || passwordString != "") {
+                  login();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      'Fill Email & Password',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                          fontSize: 16, color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ));
+                }
               },
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 25),
@@ -110,5 +138,38 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  login() async {
+    var data = {
+      'email': email.text.toString(),
+      'password': password.text.toString()
+    };
+    var res = await UserProvider().authData(data);
+    print(res.body);
+    final body = json.decode(res.body);
+
+    print(res.body);
+
+    if (res.statusCode == 200) {
+      await Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (context) => Home()), (route) => false);
+    } else if (body["message"] == "Invalid username or password") {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Error!',
+          style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
+        ),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
+  void cancelSheduleTask() async {
+    if (scheduledTask != null) {
+      scheduledTask.cancel();
+
+      print("cancel");
+    }
   }
 }

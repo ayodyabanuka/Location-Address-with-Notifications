@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:locationtracker/Providers/LocationProvider.dart';
+import 'package:locationtracker/Screens/Login.dart';
 import 'package:locationtracker/Services/NotificationService.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -78,11 +82,12 @@ class _HomeState extends State<Home> {
 
       setState(() {
         _currentAddress =
-            ' ${place.locality},${place.subAdministrativeArea},${place.administrativeArea}, ${place.country},${place.postalCode}';
+            '${place.name},${place.street},${place.subLocality}, ${place.locality},${place.subAdministrativeArea},${place.administrativeArea}, ${place.country},${place.postalCode}';
       });
     }).catchError((e) {
       debugPrint(e);
     });
+    addAddress();
   }
 
   @override
@@ -90,6 +95,7 @@ class _HomeState extends State<Home> {
     _handleLocationPermission();
     _getCurrentPosition();
     tz.initializeTimeZones();
+    scheduleTask();
     // TODO: implement initState
     super.initState();
   }
@@ -111,7 +117,13 @@ class _HomeState extends State<Home> {
                 style: GoogleFonts.poppins(color: Colors.black),
               ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    cancelSheduleTask();
+                    await Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                        (route) => false);
+                  },
                   icon: const Icon(
                     Icons.logout,
                     color: Colors.black,
@@ -145,11 +157,14 @@ class _HomeState extends State<Home> {
               style: GoogleFonts.poppins(
                   fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            Text(
-              _currentAddress ?? "",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                  fontSize: 18, fontWeight: FontWeight.w500),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Text(
+                _currentAddress ?? "",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                    fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
             const SizedBox(
               height: 40,
@@ -212,29 +227,39 @@ class _HomeState extends State<Home> {
   }
 
   scheduleTask() async {
-    scheduledTask = cron.schedule(Schedule.parse("*/1 * * * *"), () async {
-      NotificationService().showNotification(
-          1, "Location", "Now your location $_currentAddress}", 1);
+    print("Start");
+    scheduledTask = cron.schedule(Schedule.parse("*/10 * * * *"), () async {
       _getCurrentPosition();
     });
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        'Started',
-        style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
-      ),
-      backgroundColor: Colors.green,
-    ));
+    //
   }
 
   void cancelSheduleTask() async {
     scheduledTask.cancel();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
-        'End',
+        'Logged Out',
         style: GoogleFonts.poppins(fontSize: 16, color: Colors.white),
       ),
       backgroundColor: Colors.red,
     ));
     print("cancel");
+  }
+
+  addAddress() async {
+    var data = {
+      'longitude': _currentPosition.longitude.toString(),
+      'latitude': _currentPosition.latitude.toString(),
+      'address': _currentAddress.toString()
+    };
+    var res = await LocationProvider().address(data);
+    print(res.body);
+    final body = json.decode(res.body);
+
+    print(res.body);
+
+    if (res.statusCode == 200) {
+      print("Location Added");
+    }
   }
 }
