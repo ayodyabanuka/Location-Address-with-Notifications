@@ -169,57 +169,57 @@ class _HomeState extends State<Home> {
             const SizedBox(
               height: 40,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        cancelSheduleTask();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.red),
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Center(
-                          child: Text(
-                            "End",
-                            style: GoogleFonts.poppins(
-                                fontSize: 16, color: Colors.red),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        scheduleTask();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Colors.blue.shade400,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Center(
-                          child: Text(
-                            "Start",
-                            style: GoogleFonts.poppins(
-                                fontSize: 16, color: Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 20),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: GestureDetector(
+            //           onTap: () {
+            //             cancelSheduleTask();
+            //           },
+            //           child: Container(
+            //             padding: const EdgeInsets.all(10),
+            //             decoration: BoxDecoration(
+            //                 border: Border.all(color: Colors.red),
+            //                 color: Colors.white,
+            //                 borderRadius: BorderRadius.circular(10)),
+            //             child: Center(
+            //               child: Text(
+            //                 "End",
+            //                 style: GoogleFonts.poppins(
+            //                     fontSize: 16, color: Colors.red),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //       const SizedBox(
+            //         width: 10,
+            //       ),
+            //       Expanded(
+            //         child: GestureDetector(
+            //           onTap: () {
+            //             scheduleTask();
+            //           },
+            //           child: Container(
+            //             padding: const EdgeInsets.all(10),
+            //             decoration: BoxDecoration(
+            //                 color: Colors.blue.shade400,
+            //                 borderRadius: BorderRadius.circular(10)),
+            //             child: Center(
+            //               child: Text(
+            //                 "Start",
+            //                 style: GoogleFonts.poppins(
+            //                     fontSize: 16, color: Colors.black),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // )
           ],
         ),
       ),
